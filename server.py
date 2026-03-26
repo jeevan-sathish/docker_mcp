@@ -5,15 +5,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
-mcp = FastMCP("my mcp groq server")
-
+mcp = FastMCP("groq-mcp-server")
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 @mcp.tool()
-def groq_handle(prompt: str) -> str:
-    """Return a Groq LLM response"""
+def ask_groq(prompt: str) -> str:
+    """Ask Groq LLM"""
 
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",

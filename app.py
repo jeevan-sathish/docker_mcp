@@ -1,25 +1,36 @@
-from mcp import ClientSession, StdioServerParameters
-from mcp.client.stdio import stdio_client
-import asyncio
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from groq import Groq
+import os
+from dotenv import load_dotenv
 
-async def main():
+load_dotenv()
 
-    server = StdioServerParameters(
-        command="python",
-        args=["server.py"] 
-    )
+app = Flask(__name__)
+CORS(app)
 
-    async with stdio_client(server) as (read, write):
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-        async with ClientSession(read, write) as session:
+@app.route("/", methods=["POST"])
+def handle():
+    data = request.get_json()
+    prompt = data.get("prompt")
 
-            await session.initialize()
-            prompt=input("enter your query here:")
-            result = await session.call_tool(
-                "groq_handle",
-                {"prompt": prompt}
-            )
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
+        )
 
-            print("Result:", result.content[0].text)
+        reply = response.choices[0].message.content
 
-asyncio.run(main())
+        return jsonify({"reply": reply})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
