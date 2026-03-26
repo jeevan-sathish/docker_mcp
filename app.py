@@ -14,10 +14,10 @@ async def main():
         async with ClientSession(read, write) as session:
 
             await session.initialize()
-
+            prompt=input("enter your query here:")
             result = await session.call_tool(
-                "greet",
-                {"name": "jeevan"}
+                "groq_handle",
+                {"prompt": prompt}
             )
 
             print("Result:", result.content[0].text)
