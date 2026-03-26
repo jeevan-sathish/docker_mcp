@@ -6,7 +6,7 @@ async def main():
 
     server = StdioServerParameters(
         command="python",
-        args=["server.py"]   # make sure filename is correct
+        args=["server.py"] 
     )
 
     async with stdio_client(server) as (read, write):
@@ -20,7 +20,6 @@ async def main():
                 {"name": "jeevan"}
             )
 
-            # safer output handling
             print("Result:", result.content[0].text)
 
 asyncio.run(main())
